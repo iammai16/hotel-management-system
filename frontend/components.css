@@ -1,0 +1,99 @@
+:root{
+  --gold:#C9A96E;--gold-lt:#E8D5A8;--gold-dk:#8B6914;
+  --navy:#0D1B2A;--navy-lt:#1A2D42;--navy-mid:#243547;
+  --cream:#FAF7F2;--cream-dk:#F0EBE0;
+  --slate:#64748B;--slate-lt:#94A3B8;
+  --white:#FFFFFF;--black:#0A0A0A;
+  --red:#DC2626;--green:#059669;--amber:#D97706;
+  --radius:8px;--radius-lg:16px;
+  --shadow:0 4px 24px rgba(13,27,42,.12);
+  --shadow-lg:0 12px 48px rgba(13,27,42,.18);
+  --transition:all .22s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);min-height:100vh}
+
+/* ── TYPOGRAPHY ──────────────────────────────── */
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif}
+h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:300;line-height:1.1}
+h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:400}
+h3{font-size:1.2rem;font-weight:600}
+.label{font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+
+/* ── PAGES ───────────────────────────────────── */
+.page{display:none;min-height:100vh;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── NAVBAR ──────────────────────────────────── */
+.navbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(201,169,110,.2);
+  padding:0 2rem;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:.6rem;
+  font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;
+  color:var(--navy);text-decoration:none;
+  cursor: pointer;
+}
+.nav-logo .crown{font-size:1.5rem}
+.nav-links{display:flex;align-items:center;gap:.25rem}
+.nav-links a,.nav-links button{
+  padding:.45rem .85rem;border-radius:6px;
+  font-size:.85rem;font-weight:400;color:var(--slate);
+  background:none;border:none;cursor:pointer;text-decoration:none;
+  transition:var(--transition);
+}
+.nav-links a:hover,.nav-links button:hover{color:var(--navy);background:var(--cream-dk)}
+.nav-btn-primary{
+  background:var(--navy)!important;color:var(--white)!important;
+  padding:.45rem 1.1rem!important;
+}
+.nav-btn-primary:hover{background:var(--navy-lt)!important}
+.badge-role{
+  font-size:.65rem;font-weight:500;padding:.15rem .5rem;border-radius:20px;
+  background:var(--gold-lt);color:var(--gold-dk);margin-left:.3rem;
+}
+
+/* ── BUTTONS ─────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.6rem 1.4rem;border-radius:var(--radius);
+  font-size:.88rem;font-weight:500;cursor:pointer;
+  border:none;transition:var(--transition);text-decoration:none;
+}
+.btn-primary{background:var(--navy);color:var(--white)}
+.btn-primary:hover{background:var(--navy-lt);transform:translateY(-1px)}
+.btn-gold{background:var(--gold);color:var(--white)}
+.btn-gold:hover{background:var(--gold-dk);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1.5px solid var(--navy);color:var(--navy)}
+.btn-outline:hover{background:var(--navy);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--slate);border:1px solid var(--cream-dk)}
+.btn-ghost:hover{border-color:var(--slate);color:var(--navy)}
+.btn-danger{background:var(--red);color:var(--white)}
+.btn-sm{padding:.38rem .85rem;font-size:.8rem}
+.btn-lg{padding:.8rem 2rem;font-size:1rem}
+.btn-block{width:100%;justify-content:center}
+
+/* ── FORM & CARDS ────────────────────────────────────── */
+.card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:1.2rem 1.5rem;border-bottom:1px solid var(--cream-dk);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:1.5rem}
+
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:.82rem;font-weight:500;color:var(--navy);margin-bottom:.4rem}
+.form-control{
+  width:100%;padding:.6rem .9rem;border:1.5px solid var(--cream-dk);
+  border-radius:var(--radius);font-size:.9rem;font-family:'DM Sans',sans-serif;
+  color:var(--navy);background:var(--white);transition:var(--transition);
+}
+.form-control:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,.12)}
+.form-control::placeholder{color:var(--slate-lt)}
+select.form-control{cursor:pointer}
+
+/* ── COPY TIẾP TOÀN BỘ CSS CÒN LẠI CỦA BẠN VÀO ĐÂY ── */
+/* Các class table, sidebar, badge, hero section... từ CSS cũ */

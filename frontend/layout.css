@@ -1,0 +1,147 @@
+// ─── DATA (Đã đổi sang hệ thống Mai Hotel) ─────────────────
+const ROOMS = [
+  {id:1,name:'Grand Deluxe Room',type:'Double Bed Room',price:12000000,cap:2,available:true,features:['Free Breakfast','Free Cancellation','City View','WiFi']},
+  {id:2,name:'Presidential Suite',type:'Double Bed Room',price:15000000,cap:2,available:true,features:['Free Breakfast','Free Cancellation','Pool View','Butler']},
+  {id:3,name:'Royal Suite',type:'Suite',price:18000000,cap:4,available:true,features:['Free Breakfast','Garden View','Private Pool','WiFi']},
+  {id:4,name:'Standard Single 01',type:'Single Bed Room',price:6000000,cap:1,available:true,features:['WiFi','TV','Free Cancellation']},
+  {id:5,name:'Standard Single 02',type:'Single Bed Room',price:6000000,cap:1,available:false,features:['WiFi','TV']},
+  {id:6,name:'Executive Suite',type:'Suite',price:20000000,cap:4,available:true,features:['Free Breakfast','Ocean View','Jacuzzi','Butler']},
+];
+
+const USERS = [
+  {u:'admin',p:'admin123',role:'MANAGER',name:'Ngô Thị Tuyết Mai'},
+  {u:'receptionist',p:'recep123',role:'RECEPTIONIST',name:'Trần Thị Lễ Tân'},
+  {u:'customer',p:'cust123',role:'CUSTOMER',name:'Nguyễn Văn An'},
+];
+
+const BOOKINGS = [
+  {id:1,guest:'Nguyễn Văn An',room:'Grand Deluxe Room',type:'DOMESTIC',checkin:'2025-06-01',checkout:'2025-06-05',deposit:3600000,paid:true},
+  {id:2,guest:'Trần Thị Bích',room:'Royal Suite',type:'DOMESTIC',checkin:'2025-06-03',checkout:'2025-06-07',deposit:5400000,paid:false},
+];
+
+const EMPLOYEES = [
+  {id:1,name:'Trần Thị Lễ Tân',role:'RECEPTIONIST',email:'lete@maihotel.com',phone:'0901111111',active:true},
+  {id:2,name:'Nguyễn Thị Dọn Phòng',role:'HOUSEKEEPER',email:'donphong@maihotel.com',phone:'0902222222',active:true},
+  {id:3,name:'Lê Văn Kế Toán',role:'ACCOUNTANT',email:'ketoan@maihotel.com',phone:'0903333333',active:true},
+];
+
+// ─── THÊM CÁC DỮ LIỆU CŨ CÒN LẠI VÀO ĐÂY (SERVICES, ACTIVITY, COMMENTS) ───
+const COMMENTS = [
+  {user:'tung05',avatar:'T',text:'Phòng rất đẹp và sạch sẽ!',time:'2024-08-10'}
+];
+
+// ─── STATE ─────────────────────────────────────────────────
+let currentUser = null;
+let currentRoom = null;
+let selectedRecepRoom = null;
+let guestCount = 1;
+let selectedCustType = 'DOMESTIC';
+let allBookings = [...BOOKINGS];
+
+// ─── NAVIGATION ────────────────────────────────────────────
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (page === 'home') renderRooms(ROOMS);
+  if (page === 'admin') { /* renderAdmin(); */ } // Uncomment if admin module added back
+  if (page === 'receptionist') renderReceptionist();
+  window.scrollTo(0,0);
+}
+
+function renderNav() {
+  const links = document.getElementById('nav-links');
+  if (!currentUser) {
+    links.innerHTML = `
+      <a onclick="nav('home')">Trang chủ</a>
+      <a onclick="nav('home')">Phòng</a>
+      <a onclick="nav('register')">Đăng ký</a>
+      <a onclick="nav('login')" class="nav-btn-primary btn" style="margin-left:.5rem">Đăng nhập</a>`;
+  } else {
+    const badge = `<span class="badge-role">${currentUser.role}</span>`;
+    const dashLink = currentUser.role === 'MANAGER'
+      ? `<a onclick="nav('admin')">Dashboard ${badge}</a>`
+      : currentUser.role === 'RECEPTIONIST'
+      ? `<a onclick="nav('receptionist')">Dashboard ${badge}</a>`
+      : `<a onclick="nav('home')">Trang chủ ${badge}</a>`;
+    links.innerHTML = `
+      <a onclick="nav('home')">Phòng</a>
+      ${dashLink}
+      <span style="font-size:.85rem;color:var(--slate);padding:.45rem .5rem">${currentUser.name}</span>
+      <button onclick="doLogout()" class="btn btn-ghost btn-sm">Đăng xuất</button>`;
+  }
+}
+
+// ─── HOME / ROOMS VỚI TÍNH NĂNG SORT ───────────────────────────
+function fmt(n) { return n.toLocaleString('vi-VN') + 'đ'; }
+
+function renderRooms(rooms) {
+  const grid = document.getElementById('rooms-grid');
+  if (!rooms.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">🏨</div><p>Không tìm thấy phòng phù hợp</p></div>';
+    return;
+  }
+  grid.innerHTML = rooms.map(r => `
+    <div class="room-card" onclick="openDetail(${r.id})">
+      <div class="room-img">
+        <div class="room-img-inner">🛏</div>
+        <div class="tag">${r.type}</div>
+        ${r.available ? '<div class="room-avail"></div>' : ''}
+      </div>
+      <div class="room-body">
+        <h3>${r.name}</h3>
+        <div class="room-type">${r.type} · ${r.cap} người</div>
+        <div class="room-features">${r.features.map(f=>`<span class="room-feature">✓ ${f}</span>`).join('')}</div>
+        <div class="room-footer">
+          <div><div class="room-price">${fmt(r.price)} <span>/đêm</span></div></div>
+          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openDetail(${r.id})">Xem chi tiết →</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function searchRooms() {
+  const name = document.getElementById('search-name').value.toLowerCase();
+  const type = document.getElementById('search-type').value;
+  const sort = document.getElementById('sort-rooms').value;
+
+  // Lọc
+  let filtered = ROOMS.filter(r =>
+    r.available &&
+    (name ? r.name.toLowerCase().includes(name) : true) &&
+    (type ? r.type === type : true)
+  );
+
+  // Sắp xếp - TÍNH NĂNG MỚI
+  if (sort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+  if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+
+  renderRooms(filtered);
+  toast(`Tìm thấy ${filtered.length} phòng`, 'info');
+}
+
+// ─── TÍNH NĂNG IN HÓA ĐƠN THỰC TẾ ────────────────────────────
+function printInvoice() { 
+  calcInvoice(); 
+  toast('Đang chuẩn bị trang in...','info');
+  setTimeout(() => {
+    window.print(); // Gọi lệnh in của Browser
+  }, 800);
+}
+
+// ─── CÁC HÀM CŨ (doLogin, openDetail, showResCheck...) ──────
+// Bạn copy nguyên vẹn phần logic Javascript còn lại từ code cũ của bạn xuống đây nhé!
+
+// ─── TOAST & INIT ───────────────────────────────────────────
+function toast(msg, type='info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = {success:'✓',error:'✕',info:'ℹ'};
+  t.innerHTML = `<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3000);
+}
+
+// Khởi tạo
+renderNav();
+renderRooms(ROOMS);
