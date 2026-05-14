@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mai Hotel Management System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TKA Hotel Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Tích hợp CSS bằng Flask url_for -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════ -->
 <nav class="navbar" id="main-nav">
   <a class="nav-logo" onclick="nav('home')">
-    <span class="crown">👑</span> Mai Hotel
+    <span class="crown">👑</span> TKA Hotel
   </a>
   <div class="nav-links" id="nav-links">
     <a onclick="nav('home')">Trang chủ</a>
@@ -21,12 +25,17 @@
   </div>
 </nav>
 
+<!-- ═══════════════════════════════════════════
+     PAGE: HOME
+═══════════════════════════════════════════ -->
 <div id="page-home" class="page active">
+
+  <!-- Hero -->
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-inner">
       <div class="hero-text">
-        <div class="label" style="color:var(--gold);margin-bottom:.8rem">✦ Chào mừng đến Mai Hotel</div>
+        <div class="label" style="color:var(--gold);margin-bottom:.8rem">✦ Chào mừng đến TKA Hotel</div>
         <h1>Đặt phòng<br><em>độc quyền</em><br>cho chuyến đi<br>của bạn</h1>
         <p>Mỗi phòng được tuyển chọn cẩn thận, đã được thăm quan trực tiếp và không thể tìm thấy ở nơi nào khác.</p>
         <div style="display:flex;gap:.8rem">
@@ -61,31 +70,28 @@
               <input type="date" class="form-control" id="search-out">
             </div>
           </div>
-          <button class="btn btn-primary btn-block" onclick="searchRooms()">🔍 Tìm kiếm</button>
+          <button class="btn btn-primary btn-block" onclick="apiSearchRooms()">🔍 Tìm kiếm</button>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Rooms Section -->
   <section class="rooms-section">
     <div class="section-header">
       <div>
         <div class="label" style="margin-bottom:.4rem">Danh sách phòng</div>
         <h2>Phòng có sẵn</h2>
       </div>
-      <div style="display:flex;align-items:center;gap:.5rem">
-        <div id="filter-chips"></div>
-        <select class="form-control" id="sort-rooms" onchange="searchRooms()" style="padding: .4rem .8rem; height: auto;">
-          <option value="">Sắp xếp mặc định</option>
-          <option value="price-asc">Giá: Thấp đến Cao</option>
-          <option value="price-desc">Giá: Cao đến Thấp</option>
-        </select>
-      </div>
+      <div style="display:flex;align-items:center;gap:.5rem" id="filter-chips"></div>
     </div>
     <div class="rooms-grid" id="rooms-grid"></div>
   </section>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     PAGE: ROOM DETAIL
+═══════════════════════════════════════════ -->
 <div id="page-detail" class="page">
   <div class="detail-page">
     <a class="page-back" onclick="nav('home')">← Quay lại danh sách phòng</a>
@@ -99,6 +105,7 @@
           Phòng tiện nghi cao cấp với tầm nhìn tuyệt đẹp, đầy đủ tiện ích hiện đại. Bao gồm bữa sáng miễn phí, hủy phòng miễn phí trong vòng 24h và dịch vụ phòng 24/7.
         </p>
 
+        <!-- Comments -->
         <div class="comments-section">
           <h3 style="margin-bottom:1rem">💬 Đánh giá từ khách hàng</h3>
           <div id="detail-comments"></div>
@@ -112,6 +119,7 @@
         </div>
       </div>
 
+      <!-- Booking Card -->
       <div class="booking-card card">
         <div class="card-header">
           <h3 style="font-size:1rem">Đặt phòng</h3>
@@ -162,6 +170,9 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     PAGE: RESERVATION CHECK
+═══════════════════════════════════════════ -->
 <div id="page-rescheck" class="page">
   <div class="detail-page" style="max-width:700px">
     <a class="page-back" onclick="nav('detail')">← Quay lại</a>
@@ -189,20 +200,23 @@
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.2rem">
           <button class="btn btn-ghost btn-block" onclick="nav('detail')">Hủy</button>
-          <button class="btn btn-gold btn-block" onclick="confirmBooking()">💳 Thanh toán VNPay</button>
+          <button class="btn btn-gold btn-block" onclick="apiConfirmBooking()">💳 Thanh toán VNPay</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     PAGE: LOGIN
+═══════════════════════════════════════════ -->
 <div id="page-login" class="page">
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-logo">
         <div class="icon">👑</div>
         <h2>Đăng nhập</h2>
-        <p>Hệ thống quản lý Mai Hotel</p>
+        <p>Hệ thống quản lý TKA Hotel</p>
       </div>
       <div class="form-group">
         <label>Tên đăng nhập</label>
@@ -212,7 +226,7 @@
         <label>Mật khẩu</label>
         <input type="password" class="form-control" id="login-pass" placeholder="••••••••" value="admin123">
       </div>
-      <button class="btn btn-primary btn-block" style="margin-top:.5rem" onclick="doLogin()">Đăng nhập →</button>
+      <button class="btn btn-primary btn-block" style="margin-top:.5rem" onclick="apiDoLogin()">Đăng nhập →</button>
       <div class="auth-links">
         <a onclick="nav('home')">← Quay về trang chủ</a>
       </div>
@@ -232,6 +246,9 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     PAGE: REGISTER
+═══════════════════════════════════════════ -->
 <div id="page-register" class="page">
   <div class="auth-page" style="align-items:flex-start;padding-top:3rem">
     <div class="auth-card" style="max-width:480px">
@@ -260,12 +277,15 @@
       <div class="form-group"><label>Email</label><input class="form-control" id="reg-email" type="email" placeholder="email@example.com"></div>
       <div class="form-group"><label>Số điện thoại</label><input class="form-control" id="reg-phone" placeholder="0901234567"></div>
       <div class="form-group"><label>Ảnh đại diện (URL)</label><input class="form-control" id="reg-avatar" placeholder="https://..."></div>
-      <button class="btn btn-primary btn-block" onclick="doRegister()">Đăng ký →</button>
+      <button class="btn btn-primary btn-block" onclick="apiDoRegister()">Đăng ký →</button>
       <div class="auth-links">Đã có tài khoản? <a onclick="nav('login')">Đăng nhập</a></div>
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     PAGE: RECEPTIONIST
+═══════════════════════════════════════════ -->
 <div id="page-receptionist" class="page">
   <div class="layout-admin">
     <nav class="sidebar">
@@ -276,26 +296,31 @@
       <a onclick="showRecepTab('reservations')" id="rtab-reservations"><span class="icon">📋</span> Đặt phòng</a>
       <div class="sidebar-title" style="margin-top:1rem">Khách hàng</div>
       <a onclick="nav('home')"><span class="icon">🏠</span> Trang chủ</a>
-      <a onclick="doLogout()"><span class="icon">🚪</span> Đăng xuất</a>
+      <a onclick="apiDoLogout()"><span class="icon">🚪</span> Đăng xuất</a>
     </nav>
     <div class="admin-content">
+
+      <!-- Tab: Rent -->
       <div id="rtab-content-rent">
         <div style="margin-bottom:1.5rem">
           <div class="label" style="margin-bottom:.3rem">Receptionist Dashboard</div>
           <h2>RECEPTIONIST ADMINISTRATIVE VIEW!</h2>
         </div>
         <div style="display:flex;gap:.5rem;margin-bottom:1.5rem">
-          <button class="btn btn-sm" style="background:var(--cream-dk);color:var(--navy)" onclick="showRecepTab('rent')">Cho thuê</button>
+          <button class="btn btn-sm" style="background:var(--cream-dk);color:var(--navy)" onclick="">Cho thuê</button>
           <button class="btn btn-sm btn-ghost" onclick="showRecepTab('checkin')">Check in</button>
           <button class="btn btn-sm btn-ghost" onclick="showRecepTab('checkout')">Check out</button>
         </div>
 
         <div style="margin-bottom:1rem;font-weight:600;color:var(--navy)">RENTING PAGE</div>
         <div class="renting-grid">
+          <!-- Left: Room Selection -->
           <div>
             <div class="label" style="margin-bottom:.6rem">Chọn phòng</div>
             <div class="room-select-list" id="recep-room-list"></div>
           </div>
+
+          <!-- Right: Rental Form -->
           <div>
             <div class="rental-info" id="rental-info-box" style="display:none">
               <h3 id="ri-room-name">Phòng chưa chọn</h3>
@@ -348,6 +373,7 @@
         </div>
       </div>
 
+      <!-- Tab: Reservations -->
       <div id="rtab-content-reservations" style="display:none">
         <h2 style="margin-bottom:1.5rem">Danh sách đặt phòng</h2>
         <div class="card">
@@ -366,6 +392,7 @@
         </div>
       </div>
 
+      <!-- Tab: Check-in -->
       <div id="rtab-content-checkin" style="display:none">
         <h2 style="margin-bottom:1.5rem">Check-in khách hàng</h2>
         <div class="card">
@@ -389,6 +416,7 @@
         </div>
       </div>
 
+      <!-- Tab: Check-out -->
       <div id="rtab-content-checkout" style="display:none">
         <h2 style="margin-bottom:1.5rem">Check-out & Thanh toán</h2>
         <div class="card">
@@ -411,14 +439,18 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     PAGE: ADMIN DASHBOARD
+═══════════════════════════════════════════ -->
 <div id="page-admin" class="page">
   <div class="layout-admin">
     <nav class="sidebar">
-      <div class="sidebar-title">Mai Hotel Admin</div>
+      <div class="sidebar-title">Hotel Management</div>
       <a onclick="showAdminTab('dashboard')" id="atab-dashboard" class="active"><span class="icon">📊</span> Dashboard</a>
       <a onclick="showAdminTab('bookings')" id="atab-bookings"><span class="icon">📅</span> Bookings</a>
       <a onclick="showAdminTab('rooms')" id="atab-rooms"><span class="icon">🛏</span> Rooms</a>
@@ -427,21 +459,248 @@
       <a onclick="showAdminTab('services')" id="atab-services"><span class="icon">🍽</span> Services</a>
       <div class="sidebar-title" style="margin-top:1rem">Tài khoản</div>
       <a onclick="nav('home')"><span class="icon">🏠</span> Trang chủ</a>
-      <a onclick="doLogout()"><span class="icon">🚪</span> Đăng xuất</a>
+      <a onclick="apiDoLogout()"><span class="icon">🚪</span> Đăng xuất</a>
     </nav>
     <div class="admin-content">
-        <h2 style="margin-bottom: 2rem; color: var(--navy);">Admin Control Panel - Mai Hotel</h2>
-        <div id="atab-content-dashboard">
-            <div class="kpi-grid">
-                </div>
-            <p><i>*Vui lòng copy các thẻ tab Admin từ file gốc của bạn vào đây*</i></p>
+
+      <!-- DASHBOARD TAB -->
+      <div id="atab-content-dashboard">
+        <div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="label" style="margin-bottom:.3rem">Tổng quan</div>
+            <h2>Admin Dashboard</h2>
+          </div>
+          <div style="font-size:.82rem;color:var(--slate)">Cập nhật lúc 09:45 — Hôm nay</div>
         </div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Tổng booking</div>
+            <div class="kpi-value">142</div>
+            <div class="kpi-sub">↑ 12% tháng này</div>
+          </div>
+          <div class="kpi blue">
+            <div class="kpi-label">Phòng trống</div>
+            <div class="kpi-value">8</div>
+            <div class="kpi-sub">/ 24 phòng tổng</div>
+          </div>
+          <div class="kpi green">
+            <div class="kpi-label">Tổng doanh thu</div>
+            <div class="kpi-value" style="font-size:1.4rem">284M</div>
+            <div class="kpi-sub">VND tháng 5/2025</div>
+          </div>
+          <div class="kpi red">
+            <div class="kpi-label">Chưa thanh toán</div>
+            <div class="kpi-value">6</div>
+            <div class="kpi-sub">đặt phòng pending</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-area">
+            <div class="chart-title">Doanh thu theo tháng (VND triệu)</div>
+            <div class="bar-chart" id="revenue-chart"></div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-title">Tỷ lệ sử dụng phòng</div>
+            <div class="donut-wrap">
+              <div class="donut"><div class="donut-inner">62%</div></div>
+              <div style="display:flex;flex-direction:column;gap:.3rem">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div><span>Đang thuê (62%)</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--cream-dk)"></div><span>Còn trống (38%)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 style="font-size:.95rem">Hoạt động gần đây</h3>
+            <button class="btn btn-ghost btn-sm">Xem tất cả</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Thời gian</th><th>Hành động</th><th>Nhân viên</th><th>Chi tiết</th></tr></thead>
+              <tbody id="activity-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKINGS TAB -->
+      <div id="atab-content-bookings" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+          <h2>Quản lý Bookings</h2>
+          <button class="btn btn-primary btn-sm" onclick="showModal('modal-newbooking')">+ Booking mới</button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <span class="badge badge-gray" id="booking-count">Tất cả</span>
+              <input class="form-control" placeholder="Tìm khách..." style="width:200px;height:34px;font-size:.82rem;padding:.3rem .7rem" id="booking-search" oninput="filterBookings()">
+            </div>
+            <button class="btn btn-ghost btn-sm">⬇ Xuất Excel</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Khách hàng</th><th>Phòng</th><th>Loại</th><th>Check-in</th><th>Check-out</th><th>Cọc</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+              <tbody id="bookings-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROOMS TAB -->
+      <div id="atab-content-rooms" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+          <h2>Quản lý Phòng</h2>
+          <button class="btn btn-primary btn-sm" onclick="showModal('modal-newroom')">+ Thêm phòng</button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;gap:.5rem">
+              <select class="form-control" style="height:34px;font-size:.82rem;padding:.2rem .6rem;width:180px" onchange="filterRooms(this.value)">
+                <option value="">Tất cả loại phòng</option>
+                <option>Single Bed Room</option><option>Double Bed Room</option><option>Suite</option><option>Presidential Suite</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:.4rem">
+              <button class="btn btn-ghost btn-sm">⬇ Xuất</button>
+              <button class="btn btn-danger btn-sm" style="font-size:.78rem">🗑 Xóa chọn</button>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th><input type="checkbox"></th><th>ID</th><th>Tên phòng</th><th>Loại phòng</th><th>Giá/đêm</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+              <tbody id="rooms-admin-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS TAB -->
+      <div id="atab-content-reports" style="display:none">
+        <h2 style="margin-bottom:1.5rem">Báo cáo & Thống kê</h2>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Tháng này</div><div class="kpi-value" style="font-size:1.4rem">284M</div><div class="kpi-sub">VND doanh thu</div></div>
+          <div class="kpi blue"><div class="kpi-label">Tháng trước</div><div class="kpi-value" style="font-size:1.4rem">251M</div><div class="kpi-sub">VND doanh thu</div></div>
+          <div class="kpi green"><div class="kpi-label">Tỷ lệ lấp đầy</div><div class="kpi-value">62%</div><div class="kpi-sub">Trung bình tháng</div></div>
+          <div class="kpi"><div class="kpi-label">Booking mới</div><div class="kpi-value">47</div><div class="kpi-sub">Tháng này</div></div>
+        </div>
+        <div class="card" style="margin-top:1rem">
+          <div class="card-header"><h3 style="font-size:.95rem">Thống kê theo loại phòng</h3><button class="btn btn-ghost btn-sm">⬇ Excel</button></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Loại phòng</th><th>Số booking</th><th>Số đêm</th><th>Doanh thu</th><th>Tỷ lệ</th></tr></thead>
+              <tbody id="report-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPLOYEES TAB -->
+      <div id="atab-content-employees" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+          <h2>Quản lý Nhân viên</h2>
+          <button class="btn btn-primary btn-sm" onclick="showModal('modal-newemployee')">+ Thêm nhân viên</button>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Tên</th><th>Vai trò</th><th>Email</th><th>SĐT</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+              <tbody id="employees-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICES TAB -->
+      <div id="atab-content-services" style="display:none">
+        <h2 style="margin-bottom:1.5rem">Quản lý Dịch vụ</h2>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Dịch vụ</th><th>Mô tả</th><th>Giá</th><th>Lượt sử dụng</th><th>Doanh thu</th><th>Hành động</th></tr></thead>
+              <tbody id="services-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════ -->
+<div class="modal-bg hidden" id="modal-newbooking">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Tạo Booking mới</h3>
+      <button class="modal-close" onclick="hideModal('modal-newbooking')">✕</button>
+    </div>
+    <div class="form-group"><label>Khách hàng (CCCD)</label><input class="form-control" placeholder="012345678901"></div>
+    <div class="form-group"><label>Phòng</label>
+      <select class="form-control"><option>Grand Deluxe Room</option><option>Presidential Suite</option><option>Royal Suite</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+      <div class="form-group"><label>Check-in</label><input type="date" class="form-control"></div>
+      <div class="form-group"><label>Check-out</label><input type="date" class="form-control"></div>
+    </div>
+    <div style="display:flex;gap:.6rem;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="hideModal('modal-newbooking')">Hủy</button>
+      <button class="btn btn-primary" onclick="hideModal('modal-newbooking');toast('Tạo booking thành công!','success')">Tạo</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="modal-newroom">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Thêm phòng mới</h3>
+      <button class="modal-close" onclick="hideModal('modal-newroom')">✕</button>
+    </div>
+    <div class="form-group"><label>Tên phòng</label><input class="form-control" placeholder="Room 101"></div>
+    <div class="form-group"><label>Loại phòng</label>
+      <select class="form-control"><option>Single Bed Room</option><option>Double Bed Room</option><option>Suite</option><option>Presidential Suite</option></select>
+    </div>
+    <div class="form-group"><label>URL ảnh phòng</label><input class="form-control" placeholder="https://..."></div>
+    <div style="display:flex;gap:.6rem;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="hideModal('modal-newroom')">Hủy</button>
+      <button class="btn btn-primary" onclick="hideModal('modal-newroom');toast('Thêm phòng thành công!','success')">Thêm</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="modal-newemployee">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Thêm nhân viên</h3>
+      <button class="modal-close" onclick="hideModal('modal-newemployee')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+      <div class="form-group"><label>Tên đăng nhập</label><input class="form-control"></div>
+      <div class="form-group"><label>Vai trò</label>
+        <select class="form-control"><option>RECEPTIONIST</option><option>HOUSEKEEPER</option><option>ACCOUNTANT</option></select>
+      </div>
+      <div class="form-group"><label>Email</label><input class="form-control" type="email"></div>
+      <div class="form-group"><label>SĐT</label><input class="form-control"></div>
+    </div>
+    <div class="form-group"><label>Mật khẩu tạm</label><input class="form-control" type="password"></div>
+    <div style="display:flex;gap:.6rem;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="hideModal('modal-newemployee')">Hủy</button>
+      <button class="btn btn-primary" onclick="hideModal('modal-newemployee');toast('Thêm nhân viên thành công!','success')">Thêm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toast-container"></div>
 
-<script src="script.js"></script>
+<!-- NHÚNG JS FILES -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+
 </body>
 </html>
